@@ -1,0 +1,330 @@
+<head>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <style>
+        .stage {
+            background: black;
+            height: 16px;
+            width: 16px;
+        }
+
+        .sprite.ghost {
+            height: 16px;
+            width: 16px;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            border-bottom-left-radius: .2px;
+            border-bottom-right-radius: .2px;
+            -webkit-clip-path: polygon(0 0, 100% 0, 100% 100%, 95% 100%, 80% 70%, 65% 100%, 50% 70%, 35% 100%, 20% 70%, 5% 100%, 0 100%);
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 95% 100%, 80% 70%, 65% 100%, 50% 70%, 35% 100%, 20% 70%, 5% 100%, 0 100%);
+            position: relative;
+
+        }
+
+        .inky {
+            background-color: skyblue;
+        }
+
+        .pinky {
+            background-color: pink;
+        }
+        .blinky {
+            background-color: red;
+        }
+        .clyde {
+            background-color: chocolate;
+        }
+
+        .sprite.ghost.step {
+            -webkit-clip-path: polygon(0 0, 100% 0, 100% 100%, 95% 100%, 65% 70%, 50% 100%, 20% 70%, 5% 100%, 0 100%);
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 95% 100%, 65% 70%, 50% 100%, 20% 70%, 5% 100%, 0 100%);
+        }
+
+        .sprite.ghost .eye {
+            height: 40%;                
+            width: 35%;                
+            background-color: white;
+            -webkit-clip-path: ellipse(40% 50% at 50% 50%);
+            clip-path: ellipse(40% 50% at 50% 50%);
+
+            position: absolute;
+            left: 3%;
+            top: 14%;
+        }
+
+        .sprite.ghost .eye.left {
+            left: 3%;
+            top: 14%;
+        }
+
+        .sprite.ghost .eye.right {
+            left: 46%;
+            top: 14%;
+        }
+
+        .sprite.ghost .pupil {
+            background-color: black;
+            position: absolute;
+            height: 15%;
+            width: 12%;
+            -webkit-clip-path: ellipse(40% 50% at 50% 50%);
+            clip-path: ellipse(40% 50% at 50% 50%);
+        }
+
+        .sprite.ghost .pupil.left {
+            left: 51%;
+            top: 35%;
+        }
+
+        .sprite.ghost .pupil.right {
+            left: 7%;
+            top: 35%;
+        }
+
+        .sprite.ghost.dir-right .eye.left {
+            left: 20%;
+        }
+
+        .sprite.ghost.dir-down .eye.left {
+            left: 11%;
+        }
+
+        .sprite.ghost.dir-up .eye.left {
+            left: 11%;
+            top: 7%; 
+        }
+
+        .sprite.ghost.dir-right .pupil.left {
+            left: 39%;
+            top: 35%;
+        }
+
+        .sprite.ghost.dir-down .pupil.left {
+            left: 22%;
+            top: 39%;
+        }
+
+        .sprite.ghost.dir-up .pupil.left {
+            left: 22%;
+            top: 7%; 
+        }
+
+        .sprite.ghost.dir-right .eye.right {
+            left: 63%;
+        }
+
+        .sprite.ghost.dir-down .eye.right {
+            left: 54%;
+        }
+
+        .sprite.ghost.dir-up .eye.right {
+            left: 54%;
+            top: 7%;
+        }
+
+        .sprite.ghost.dir-right .pupil.right {
+            left: 82%;
+            top: 35%;
+        }
+
+        .sprite.ghost.dir-down .pupil.right {
+            left: 65%;
+            top: 39%;
+        }
+
+        .sprite.ghost.dir-up .pupil.right {
+            left: 66%;
+            top: 7%;
+        }
+
+        .sprite.ghost.scared .eye {
+            display: none;
+        }
+
+        .sprite.ghost.scared .pupil.left {
+            background-color: white; 
+            left: 30%;
+            top: 30%;
+            -webkit-clip-path: circle(40% at 50% 50%);
+            clip-path: circle(40% at 50% 50%);
+        }
+
+        .sprite.ghost.scared .pupil.right {
+            background-color: white;
+            left: 55%;
+            top: 30%;
+            -webkit-clip-path: circle(40% at 50% 50%);
+            clip-path: circle(40% at 50% 50%);
+        }
+
+        .sprite.ghost.scared {
+            background-color: blue;
+        }
+
+        .sprite.ghost .mouth {
+            display: none;
+        }
+
+        .sprite.ghost.scared .mouth {
+            display: block;
+            position: absolute;
+            left: 2.5px;
+            top: 9px;
+        }
+
+        .sprite.ghost.scared .mouth0, .sprite.ghost .mouth1 {
+            border: solid 1px;
+            border-radius: 2.5px;
+            border-color: white;
+            display: inline-block;
+            height: 1px;
+            width: 1.5px;
+        } 
+        .sprite.ghost.scared .mouth0 {
+            border-bottom: none;
+            border-left: none;
+            border-right: none;
+        }
+        .sprite.ghost.scared .mouth1 {
+            border-top: none;
+            border-left: none;
+            border-right: none;
+        }
+        .sprite.ghost.scared.flash {
+            background-color: white;
+        }
+        .sprite.ghost.scared.flash .pupil.left {
+            background-color: red;
+        }
+        .sprite.ghost.scared.flash .pupil.right {
+            background-color: red;
+        }
+        .sprite.ghost.scared.flash .mouth {
+            background-color: red;
+        }
+
+        .sprite.ghost.eaten {
+            background
+        }
+    </style>
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $(document).on('keydown', function(e) {
+                if (e.which == 32) {
+                    console.log('hit space');
+                    if ($('.sprite.ghost').hasClass('scared')) {
+                        $('.sprite.ghost').removeClass('scared');
+                        } else {
+                        $('.sprite.ghost').addClass('scared');
+                    }
+                }
+
+                $('.sprite.ghost').removeClass('dir-right');
+                $('.sprite.ghost').removeClass('dir-up');
+                $('.sprite.ghost').removeClass('dir-down');
+
+                if (e.which == 37) {
+                    console.log('left');
+                    } else if (e.which == 38) {
+                    console.log('top');
+                    $('.sprite.ghost').addClass('dir-up');
+                    } else if (e.which == 39) {
+                    console.log('right');
+                    $('.sprite.ghost').addClass('dir-right');
+                    } else if (e.which == 40) {
+                    console.log('down');
+                    $('.sprite.ghost').addClass('dir-down');
+                }
+            });
+            setInterval(function() {
+                var ghost = $('.ghost');
+                if (ghost.hasClass('step')) {
+                    ghost.removeClass('step');
+                    } else {
+                    ghost.addClass('step');
+                }
+
+                if (ghost.hasClass('scared')) {
+                    var mouth0 = $('.sprite.ghost .mouth0');
+                    var mouth1 = $('.sprite.ghost .mouth1');
+
+                    mouth0.removeClass('mouth0');
+                    mouth0.addClass('mouth1');
+                    mouth1.removeClass('mouth1');
+                    mouth1.addClass('mouth0');
+
+                }
+            }, 100);
+        });
+    </script>
+</head>
+<body>
+    <div class="stage">
+        <div class="sprite ghost inky">
+            <div class="eye left"></div>
+            <div class="eye right"></div>
+            <div class="pupil left"></div>
+            <div class="pupil right"></div>
+            <div class="mouth">
+                <div class="mouth0"></div>
+                <div class="mouth1"></div>
+                <div class="mouth0"></div>
+                <div class="mouth1"></div>
+                <div class="mouth0"></div>
+                <div class="mouth1"></div>
+                <div class="mouth0"></div>
+            </div>
+        </div>
+    </div>
+    <div class="stage">
+        <div class="sprite ghost blinky">
+            <div class="eye left"></div>
+            <div class="eye right"></div>
+            <div class="pupil left"></div>
+            <div class="pupil right"></div>
+            <div class="mouth">
+                <div class="mouth0"></div>
+                <div class="mouth1"></div>
+                <div class="mouth0"></div>
+                <div class="mouth1"></div>
+                <div class="mouth0"></div>
+                <div class="mouth1"></div>
+                <div class="mouth0"></div>
+            </div>
+        </div>
+    </div>
+    <div class="stage">
+        <div class="sprite ghost pinky">
+            <div class="eye left"></div>
+            <div class="eye right"></div>
+            <div class="pupil left"></div>
+            <div class="pupil right"></div>
+            <div class="mouth">
+                <div class="mouth0"></div>
+                <div class="mouth1"></div>
+                <div class="mouth0"></div>
+                <div class="mouth1"></div>
+                <div class="mouth0"></div>
+                <div class="mouth1"></div>
+                <div class="mouth0"></div>
+            </div>
+        </div>
+    </div>
+    <div class="stage">
+        <div class="sprite ghost clyde">
+            <div class="eye left"></div>
+            <div class="eye right"></div>
+            <div class="pupil left"></div>
+            <div class="pupil right"></div>
+            <div class="mouth">
+                <div class="mouth0"></div>
+                <div class="mouth1"></div>
+                <div class="mouth0"></div>
+                <div class="mouth1"></div>
+                <div class="mouth0"></div>
+                <div class="mouth1"></div>
+                <div class="mouth0"></div>
+            </div>
+        </div>
+    </div>
+</body>

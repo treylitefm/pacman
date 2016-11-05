@@ -1,0 +1,368 @@
+* {
+    font-family: Calibri;
+}
+body {
+    position: relative;
+}
+.container {
+    width: 680px;
+    height: 580px;
+    background-color: black;
+    margin: 0 auto;
+    padding-top: 15px;
+    box-sizing: border-box;
+    border-radius: 5px;
+}
+
+.stage {
+    width: 448px;
+    height: 496px;
+    background-color: black;
+    margin: 0 auto;
+    position: relative;
+    font-size: 0;
+}
+
+.stage .block {
+    height: 16px;
+    width: 16px;
+    display: inline-block;
+    /*
+    box-sizing: border-box;
+    border-style: solid;
+    border-width: 1px;
+    border-color: white;
+    */
+}
+
+.border {
+    background-color: white;
+}
+
+.pellet {
+    background-color: white;
+    -webkit-clip-path: circle(15% at 50% 50%);
+    clip-path: circle(15% at 50% 50%);
+}
+
+.power-pellet {
+    background-color: white;
+    -webkit-clip-path: circle(35% at 50% 50%);
+    clip-path: circle(35% at 50% 50%);
+    transition: all .5s ease;
+}
+
+.power-pellet.pulse {
+    -webkit-clip-path: circle(15% at 50% 50%);
+    clip-path: circle(15% at 50% 50%);
+}
+
+.fruit {
+    background-color: red;
+}
+
+.portal {
+    background-color: black;
+}
+
+.empty {
+    background-color: black;
+}
+
+.sprite {
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+.pacman {
+    display: inline-block;
+}
+
+.pacman .top.open {
+    transform: rotate(-30deg);
+}
+
+.pacman .bottom {
+    transform: rotate(180deg);
+}
+
+.pacman .bottom.open {
+    transform: rotate(210deg);
+}
+
+.pacman .semi {
+    height: 8px;
+    width: 16px;
+    background-color: gold;
+    display: block;
+    border-radius: 90px 90px 0 0;
+    -moz-border-radius: 90px 90px 0 0;
+    -webkit-border-radius: 90px 90px 0 0;
+    transition: 0.1s;
+}
+
+.pacman.up {
+    transform: rotate(270deg);
+}
+
+.pacman.right {
+    transform: rotate(0deg);
+}
+
+.pacman.down {
+    transform: rotate(90deg);
+}
+
+.pacman.left {
+    transform: rotate(180deg);
+}
+
+.sprite.ghost {
+    height: 16px;
+    width: 16px;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    border-bottom-left-radius: .2px;
+    border-bottom-right-radius: .2px;
+    -webkit-clip-path: polygon(0 0, 100% 0, 100% 100%, 95% 100%, 80% 70%, 65% 100%, 50% 70%, 35% 100%, 20% 70%, 5% 100%, 0 100%);
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 95% 100%, 80% 70%, 65% 100%, 50% 70%, 35% 100%, 20% 70%, 5% 100%, 0 100%);
+    position: absolute;
+}
+
+.inky {
+    background-color: skyblue;
+}
+
+.pinky {
+    background-color: pink;
+}
+.blinky {
+    background-color: red;
+}
+.clyde {
+    background-color: chocolate;
+}
+
+.sprite.ghost.step {
+    -webkit-clip-path: polygon(0 0, 100% 0, 100% 100%, 95% 100%, 65% 70%, 50% 100%, 20% 70%, 5% 100%, 0 100%);
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 95% 100%, 65% 70%, 50% 100%, 20% 70%, 5% 100%, 0 100%);
+}
+
+.sprite.ghost .eye {
+    height: 40%;
+    width: 35%;
+    background-color: white;
+    -webkit-clip-path: ellipse(40% 50% at 50% 50%);
+    clip-path: ellipse(40% 50% at 50% 50%);
+
+    position: absolute;
+    left: 3%;
+    top: 14%;
+}
+
+.sprite.ghost .eye.left {
+    left: 3%;
+    top: 14%;
+}
+
+.sprite.ghost .eye.right {
+    left: 46%;
+    top: 14%;
+}
+
+.sprite.ghost .pupil {
+    background-color: black;
+    position: absolute;
+    height: 15%;
+    width: 12%;
+    -webkit-clip-path: ellipse(40% 50% at 50% 50%);
+    clip-path: ellipse(40% 50% at 50% 50%);
+}
+
+.sprite.ghost .pupil.left {
+    left: 51%;
+    top: 35%;
+}
+
+.sprite.ghost .pupil.right {
+    left: 7%;
+    top: 35%;
+}
+
+.sprite.ghost.dir-right .eye.left {
+    left: 20%;
+}
+
+.sprite.ghost.dir-down .eye.left {
+    left: 11%;
+}
+
+.sprite.ghost.dir-up .eye.left {
+    left: 11%;
+    top: 7%;
+}
+
+.sprite.ghost.dir-right .pupil.left {
+    left: 39%;
+    top: 35%;
+}
+
+.sprite.ghost.dir-down .pupil.left {
+    left: 22%;
+    top: 39%;
+}
+
+.sprite.ghost.dir-up .pupil.left {
+    left: 22%;
+    top: 7%;
+}
+
+.sprite.ghost.dir-right .eye.right {
+    left: 63%;
+}
+
+.sprite.ghost.dir-down .eye.right {
+    left: 54%;
+}
+
+.sprite.ghost.dir-up .eye.right {
+    left: 54%;
+    top: 7%;
+}
+
+.sprite.ghost.dir-right .pupil.right {
+    left: 82%;
+    top: 35%;
+}
+
+.sprite.ghost.dir-down .pupil.right {
+    left: 65%;
+    top: 39%;
+}
+
+.sprite.ghost.dir-up .pupil.right {
+    left: 66%;
+    top: 7%;
+}
+
+.sprite.ghost.scared .eye {
+    display: none;
+}
+
+.sprite.ghost.scared .pupil.left {
+    background-color: white;
+    left: 30%;
+    top: 30%;
+    -webkit-clip-path: circle(40% at 50% 50%);
+    clip-path: circle(40% at 50% 50%);
+}
+
+.sprite.ghost.scared .pupil.right {
+    background-color: white;
+    left: 55%;
+    top: 30%;
+    -webkit-clip-path: circle(40% at 50% 50%);
+    clip-path: circle(40% at 50% 50%);
+}
+
+.sprite.ghost.scared {
+    background-color: blue;
+}
+
+.sprite.ghost .mouth {
+    display: none;
+}
+
+.sprite.ghost.scared .mouth {
+    display: block;
+    position: absolute;
+    left: 2.5px;
+    top: 9px;
+}
+
+.sprite.ghost.scared .mouth0, .sprite.ghost .mouth1 {
+    border: solid 1px;
+    border-radius: 2.5px;
+    border-color: white;
+    display: inline-block;
+    height: 1px;
+    width: 1.5px;
+}
+.sprite.ghost.scared .mouth0 {
+    border-bottom: none;
+    border-left: none;
+    border-right: none;
+}
+.sprite.ghost.scared .mouth1 {
+    border-top: none;
+    border-left: none;
+    border-right: none;
+}
+
+.sprite.ghost.scared.flash {
+    background-color: white;
+}
+
+.sprite.ghost.scared.flash .pupil.left {
+    background-color: red;
+}
+
+.sprite.ghost.scared.flash .pupil.right {
+    background-color: red;
+}
+
+.sprite.ghost.scared.flash .mouth {
+    background-color: red;
+}
+
+.sprite.ghost.eaten {
+    background-color: black;
+}
+
+.log {
+    width: 200px;
+    max-height: 280px;
+    background-color: blue;
+    color: white;
+    margin: 0 auto;
+    position: absolute;
+    overflow: auto;
+    border-radius: 5px;
+    top: 0;
+}
+
+.log-left {
+    left: 0;
+}
+
+.log-left.bottom {
+    top: 300px;
+}
+
+.log-right {
+    right: 0;
+
+}
+
+.log.log-right p {
+    margin-left: 50px;
+}
+
+.log h3 {
+    text-align: center;
+}
+
+.log p {
+    margin-left: 40px;
+    font-size: 1.1em;
+}
+
+audio {
+    display: none;
+}
+
+p.directions {
+  color: white;
+  text-align: center;
+}

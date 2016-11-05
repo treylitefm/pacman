@@ -1,0 +1,20 @@
+{
+  "name": "pacman",
+  "homepage": "https://github.com/treylitefm/docker-stuffs",
+  "authors": [
+    "Omar Griffin <treylitefm@Omars-MacBook-Air.local>"
+  ],
+  "description": "",
+  "main": "",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "^3.1.1"
+  }
+}
