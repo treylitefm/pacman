@@ -283,6 +283,7 @@ class Graph {
             this.vertices[v].heuristic = Math.abs(t.w-Math.floor(this.vertices[v].id/length))+Math.abs(t.l-this.vertices[v].id%length)
             this.vertices[v].visited = false //substitute for closed list
             this.vertices[v].cost = Infinity
+            this.vertices[v].previous = null
         }
 
         curr.cost = 0
