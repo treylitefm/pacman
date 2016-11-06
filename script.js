@@ -48,6 +48,18 @@ $(document).ready(function() {
     [0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
     ];
+    var stage0Graph
+
+    $.getScript("graph.js", function() {
+        stage0Graph = new Graph()
+        stage0Graph.consumeGrid(stage0, [0])
+        stage0Graph.pointToPoint = function(p0, p1) {
+            //note: pacman assumes x is horizontal axis and y is vertical, but graph assumes the opposite, so values must be transposed before passing in
+            var length = stage0[0].length
+            var width = stage0.length
+            return stage0Graph.Astar(Math.floor(p0.y)*length+Math.floor(p0.x),Math.floor(p1.y)*length+Math.floor(p1.x), true, length, width)
+        }
+    })
 
     var gameManager = {
         shiftCadence: 50, //ms
@@ -76,6 +88,7 @@ $(document).ready(function() {
         direction: 'left',
         shiftDelta: 4, //px
         nextMove: undefined,
+        pathHome: [],
         isGhost: true
     }
 
@@ -84,6 +97,7 @@ $(document).ready(function() {
         direction: 'right',
         shiftDelta: 4, //px
         nextMove: undefined,
+        pathHome: [],
         isGhost: true
     };
     var pinky = {
@@ -91,6 +105,7 @@ $(document).ready(function() {
         direction: 'left',
         shiftDelta: 4, //px
         nextMove: undefined,
+        pathHome: [],
         isGhost: true
     };
     var clyde = {
@@ -98,8 +113,11 @@ $(document).ready(function() {
         direction: 'right',
         shiftDelta: 4, //px
         nextMove: undefined,
+        pathHome: [],
         isGhost: true
     };
+
+    var ghosts = [inky, blinky, pinky, clyde]
 
     $(document).on('keydown', function(e) {
         if (gameManager['fired']) {
@@ -114,22 +132,29 @@ $(document).ready(function() {
                 positionGhost(pinky);
                 positionGhost(clyde);
                 positionPacman();
-//                $('audio.start')[0].play();
+                $('audio.start')[0].play();
                 gameManager['initialized'] = true;
-               // $('audio.start').on('ended', function() {
+                $('audio.start').on('ended', function() {
                     gameManager['shiftIntervalID'] = setInterval(function() {
                         shift($('.pacman'));
-                        if (shift($('.inky')) || shift($('.blinky')) || shift($('.pinky')) || shift($('.clyde'))) { //checking for if pacman is caught
-                            clearInterval(gameManager['shiftIntervalID']);
-                            console.log('THIS IS THE END, GOODBYE PACMAN');
+                        
+                        for (g in ghosts) {
+                            var sprite = $('.'+ghosts[g].name)
+
+                            if (sprite.hasClass('eaten')) {//if eaten move faster, head home
+                                shift(sprite)
+                            }
+                            if (shift(sprite)) {//checking for if pacman is caught
+                                clearInterval(gameManager['shiftIntervalID']);
+                                console.log('THIS IS THE END, GOODBYE PACMAN');
+                            }
                         }
                     }, gameManager['shiftCadence']);
                     gameManager['wakaIntervalID'] = setInterval(waka, gameManager['wakaCadence']);
                     gameManager['powerPelletPulseIntervalID'] = setInterval(powerPelletPulse, gameManager['powerPelletPulseCadence']);
-                    //ghostShiftIntervalID = setInterval(ghostShift); //TODO: figure out how tf this is going to work
                     gameManager['ghostStepIntervalID'] = setInterval(ghostStepAndScared, 100);
                     //$('audio.waka0')[0].play();
-               // });
+                });
             } else {
                 console.log('Stopping');
                 clearInterval(gameManager['shiftIntervalID']);
@@ -159,11 +184,41 @@ $(document).ready(function() {
         data['nextMove'] = move['canMove'] ? move : undefined;
     }
 
-    function shift(sprite) { //TODO: A* algorithm for finding shortest route to pacman
+    function shift(sprite) {
         var move;
         var spriteData = sprite.data('data');
         var nextMove = spriteData['nextMove'];
         var shiftDelta = spriteData['shiftDelta'];
+
+        if (spriteData.pathHome && spriteData.pathHome.length) {
+            var pos = getMatrixPos(getCenter(sprite))
+            var nextHome = {//head towards next node on path home
+                x: spriteData.pathHome[spriteData.pathHome.length-1].id%stage0[0].length,
+                y: Math.floor(spriteData.pathHome[spriteData.pathHome.length-1].id/stage0[0].length),
+            }
+
+            if (pos.x == nextHome.x && pos.y == nextHome.y) { //if current position is final node on path home, pop and recalc dir to path home
+                spriteData.pathHome.pop()
+                if (spriteData.pathHome.length) {
+                    nextHome = {//head towards next node on path home
+                        x: spriteData.pathHome[spriteData.pathHome.length-1].id%stage0[0].length,
+                        y: Math.floor(spriteData.pathHome[spriteData.pathHome.length-1].id/stage0[0].length),
+                    }
+                } else {
+                    sprite.removeClass('eaten')
+                }
+            }
+
+            if (pos.x-nextHome.x > 0) {
+                nextMove = canMove(sprite, 'left')
+            } else if (pos.x-nextHome.x < 0) {
+                nextMove = canMove(sprite, 'right')
+            } else if (pos.y-nextHome.y > 0) {
+                nextMove = canMove(sprite, 'up')
+            } else if (pos.y-nextHome.y < 0) {
+                nextMove = canMove(sprite, 'down')
+            }
+        }
 
         if (nextMove !== undefined && nextMove['canMove'] == true) { //if passed a new direction and the new direction is able to be moved to, then set old direction to new direction
             spriteData['direction'] = nextMove['direction'];
@@ -200,16 +255,19 @@ $(document).ready(function() {
 
         if (spriteData['isGhost'] && isCollisionWithPacman(sprite)) {
             if (sprite.hasClass('scared')) {
-                eatGhost(sprite);
-            } else if (!gameManager['powerPelletActive']) {
+                eatGhost(sprite, spriteData);
+            } else if (!gameManager['powerPelletActive'] && !sprite.hasClass('eaten')) {
                 return true; //Game Over
             }
         }
     }
 
-    function eatGhost(sprite) {
+    function eatGhost(sprite, spriteData) {
         sprite.removeClass('scared');
         sprite.addClass('eaten');
+        var pos = getMatrixPos(getCenter(sprite)) //11r13.5c
+        spriteData.pathHome = stage0Graph.pointToPoint({x:pos.x,y:pos.y}, {x:13,y:11})
+        console.log(spriteData.pathHome)
     }
 
     function isCollisionWithPacman(ghost) {
@@ -260,7 +318,7 @@ $(document).ready(function() {
             atBlockCenter = true;
         }
 
-        if (atBlockCenter && spriteData['isGhost']) { //if ghost can turn from center of block, override dir
+        if (atBlockCenter && spriteData['isGhost'] && !sprite.hasClass('eaten')) { //if ghost can turn from center of block, override dir unless returning home after being eaten
             var turn = canTurn(sprite, {x: x, y: y});
             if (turn['canTurn'] && turn['atCorner']) {
                 var index = turn['options'].indexOf(spriteData['direction']); //find index of current direction in options
@@ -506,24 +564,23 @@ $(document).ready(function() {
         if (isPowerPellet) {
             pellet.removeClass('power-pellet');
             gameManager['powerPelletActive'] = true;
-            var ghosts = $('.ghost');
+            var ghostSprites = $('.ghost');
             
-            ghosts.addClass('scared');
-            inky['shiftDelta'] = 2;
+            ghostSprites.addClass('scared');
 
             var scaredGhostIntervalID;
             setTimeout(function() {
                 scaredGhostIntervalID = setInterval(function() {
-                    ghosts.addClass('flash');
-                    setTimeout(function () { ghosts.removeClass('flash'); }, 500);
+                    ghostSprites.addClass('flash');
+                    setTimeout(function () { ghostSprites.removeClass('flash'); }, 500);
                 }, 750);
             }, 2000);
             setTimeout(function() {
                 clearInterval(scaredGhostIntervalID);
                 gameManager['powerPelletActive'] = false;
-                ghosts.removeClass('scared');
+                ghostSprites.removeClass('scared');
+                inky['shiftDelta'] = 4;
             }, 8000);
-            inky['shiftDelta'] = 4;
         } else {
             pellet.removeClass('pellet');
         }
